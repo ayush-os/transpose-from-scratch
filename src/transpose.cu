@@ -15,16 +15,16 @@ __global__ void transpose_kernel(float *output, const float *input)
   int x = blockIdx.x * TILE_SIZE + threadIdx.x;
   int y = blockIdx.y * TILE_SIZE + threadIdx.y;
 
-  for (int j = 0; j < ELEMS_PER_THREAD; j++)
-    tile[threadIdx.y][threadIdx.x + j] = input[y * MATRIX_DIM + x + j];
+  for (int j = 0; j < TILE_DIM; j += NUM_THREADS_Y)
+    tile[threadIdx.y + j][threadIdx.x] = input[(y + j) * MATRIX_DIM + x];
 
   __syncthreads();
 
-  int xNew = blockIdx.y * TILE_SIZE + threadIdx.x;
-  int yNew = blockIdx.x * TILE_SIZE + threadIdx.y;
+  x = blockIdx.y * TILE_SIZE + threadIdx.x;
+  y = blockIdx.x * TILE_SIZE + threadIdx.y;
 
-  for (int j = 0; j < ELEMS_PER_THREAD; j++)
-    output[yNew * MATRIX_DIM + xNew + j] = tile[threadIdx.x + j][threadIdx.y];
+  for (int j = 0; j < TILE_DIM; j += NUM_THREADS_Y)
+    output[(y + j) * MATRIX_DIM + x] = tile[threadIdx.x][threadIdx.y + j];
 }
 
 void checkCudaError(cudaError_t err, const char *msg) {
