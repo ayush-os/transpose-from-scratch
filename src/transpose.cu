@@ -8,7 +8,7 @@ const int MATRIX_DIM = 4096;
 
 __global__ void transpose_kernel(float *output, const float *input)
 {
-  __shared__ float tile[TILE_SIZE][TILE_SIZE];
+  __shared__ float tile[TILE_SIZE][TILE_SIZE + 1];
 
   int x = blockIdx.x * blockDim.x + threadIdx.x;
   int y = blockIdx.y * blockDim.y + threadIdx.y;
