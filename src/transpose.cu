@@ -5,6 +5,8 @@
 
 const int TILE_SIZE = 32;
 const int MATRIX_DIM = 4096;
+const int ELEMS_PER_THREAD = 4;
+const int NUM_THREADS_Y = TILE_SIZE / ELEMS_PER_THREAD;
 
 __global__ void transpose_kernel(float *output, const float *input)
 {
@@ -13,14 +15,16 @@ __global__ void transpose_kernel(float *output, const float *input)
   int x = blockIdx.x * blockDim.x + threadIdx.x;
   int y = blockIdx.y * blockDim.y + threadIdx.y;
 
-  tile[threadIdx.y][threadIdx.x] = input[y * MATRIX_DIM + x];
+  for (int j = 0; j < ELEMS_PER_THREAD; j++)
+    tile[threadIdx.y][threadIdx.x + j] = input[y * MATRIX_DIM + x + j];
 
   __syncthreads();
 
   int xNew = blockIdx.y * blockDim.x + threadIdx.x;
   int yNew = blockIdx.x * blockDim.y + threadIdx.y;
 
-  output[yNew * MATRIX_DIM + xNew] = tile[threadIdx.x][threadIdx.y];
+  for (int j = 0; j < ELEMS_PER_THREAD; j++)
+    output[yNew * MATRIX_DIM + xNew + j] = tile[threadIdx.x + j][threadIdx.y];
 }
 
 void checkCudaError(cudaError_t err, const char *msg) {
@@ -61,8 +65,8 @@ int main() {
       cudaMemcpy(d_input, h_input.data(), bytes, cudaMemcpyHostToDevice),
       "input copy H->D");
 
-  dim3 threadsPerBlock(32, 32, 1);
-  dim3 numBlocks(MATRIX_DIM / 32, MATRIX_DIM / 32);
+  dim3 threadsPerBlock(TILE_SIZE, NUM_THREADS_Y, 1);
+  dim3 numBlocks(MATRIX_DIM / TILE_SIZE, MATRIX_DIM / TILE_SIZE);
 
   std::cout << "Grid: " << numBlocks.x << "x" << numBlocks.y << " blocks, "
             << threadsPerBlock.x << "x" << threadsPerBlock.y
