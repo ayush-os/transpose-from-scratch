@@ -38,3 +38,7 @@ now ncu results:
 
 now kernel exeuction time - 121.1 us
 - 1.62x improvement from phase 2
+
+Phase 4: increase ILP by switching from 32x32 to 32x8 aka each elem calculates 4 instead of 1
+
+91.0048 us (1.33x improvement from phase 3)
