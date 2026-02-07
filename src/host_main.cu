@@ -3,7 +3,6 @@
 #include <iostream>
 #include <vector>
 
-__global__ void baseline_copy_kernel(float *output, const float *input);
 __global__ void baseline_transpose_kernel(float *output, const float *input);
 
 void checkCudaError(cudaError_t err, const char *msg) {
