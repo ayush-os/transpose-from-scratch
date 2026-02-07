@@ -18,7 +18,7 @@ __global__ void baseline_transpose_kernel(float *output, const float *input)
   int xNew = blockIdx.y * blockDim.x + threadIdx.x;
   int yNew = blockIdx.x * blockDim.y + threadIdx.x;
 
-  output[yNew * 4096 + xNew] = tile[threadIdx.x][threadIdx.y];
+  output[yNew * 4096 + xNew] = tile[threadIdx.y][threadIdx.x];
 
   // if (x < 4096 && y < 4096) {
   //   output[x * 4096 + y] = input[y * 4096 + x];
