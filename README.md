@@ -9,3 +9,9 @@ Phase 1: base kernel
 - 
 
 Phase 2: tiling/smem
+- switching to 32x32 smem array which all threads in the block load into normally
+- then i reverse the blockIdx.x/y and the tile[threadIdx.x][threadIdx.y] to do the transpose
+- this eliminates the writes uncoalescing, meaning now both reads and writes are coalesced.
+- 196.634 us (2.59x speedup from phase 1)
+
+Phase 3: 
