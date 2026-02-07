@@ -61,7 +61,7 @@ int main() {
       cudaMemcpy(d_input, h_input.data(), bytes, cudaMemcpyHostToDevice),
       "input copy H->D");
 
-  dim3 threadsPerBlock(32, 4, 1);
+  dim3 threadsPerBlock(32, 32, 1);
   dim3 numBlocks(MATRIX_DIM / 32, MATRIX_DIM / 32);
 
   std::cout << "Grid: " << numBlocks.x << "x" << numBlocks.y << " blocks, "
