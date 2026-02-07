@@ -9,8 +9,8 @@ __global__ void baseline_transpose_kernel(float *output, const float *input)
 
   int threadIdYMatrix = threadIdY * 4;
 
-  output[threadIdYMatrix][threadIdX] = input[threadIdX][threadIdYMatrix];
-  output[threadIdYMatrix+1][threadIdX] = input[threadIdX][threadIdYMatrix+1];
-  output[threadIdYMatrix+2][threadIdX] = input[threadIdX][threadIdYMatrix+2];
-  output[threadIdYMatrix+3][threadIdX] = input[threadIdX][threadIdYMatrix+3];
+  output[threadIdYMatrix*4096+threadIdX] = input[threadIdX*4096+threadIdYMatrix];
+  output[(threadIdYMatrix+1)*4096+threadIdX] = input[threadIdX*4096+threadIdYMatrix+1];
+  output[(threadIdYMatrix+2)*4096+threadIdX] = input[threadIdX*4096+threadIdYMatrix+2];
+  output[(threadIdYMatrix+3)*4096+threadIdX] = input[threadIdX*4096+threadIdYMatrix+3];
 }
