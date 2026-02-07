@@ -15,7 +15,7 @@ __global__ void transpose_kernel(float *output, const float *input)
   int x = blockIdx.x * TILE_SIZE + threadIdx.x;
   int y = blockIdx.y * TILE_SIZE + threadIdx.y;
 
-  for (int j = 0; j < TILE_DIM; j += NUM_THREADS_Y)
+  for (int j = 0; j < TILE_SIZE; j += NUM_THREADS_Y)
     tile[threadIdx.y + j][threadIdx.x] = input[(y + j) * MATRIX_DIM + x];
 
   __syncthreads();
@@ -23,7 +23,7 @@ __global__ void transpose_kernel(float *output, const float *input)
   x = blockIdx.y * TILE_SIZE + threadIdx.x;
   y = blockIdx.x * TILE_SIZE + threadIdx.y;
 
-  for (int j = 0; j < TILE_DIM; j += NUM_THREADS_Y)
+  for (int j = 0; j < TILE_SIZE; j += NUM_THREADS_Y)
     output[(y + j) * MATRIX_DIM + x] = tile[threadIdx.x][threadIdx.y + j];
 }
 
