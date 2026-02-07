@@ -57,7 +57,7 @@ int main() {
   std::cout << "Warming up the GPU and Caches (" << WARMUP_RUNS << " runs)..."
             << std::endl;
   for (int i = 0; i < WARMUP_RUNS; ++i) {
-    smem_transpose_kernel<<<numBlocks, threadsPerBlock>>>(d_output, d_input);
+    baseline_transpose_kernel<<<numBlocks, threadsPerBlock>>>(d_output, d_input);
   }
   cudaDeviceSynchronize();
   checkCudaError(cudaGetLastError(), "warm-up kernel launch");
@@ -71,7 +71,7 @@ int main() {
     cudaEventRecord(start);
 
     // Kernel launch
-    smem_transpose_kernel<<<numBlocks, threadsPerBlock>>>(d_output, d_input);
+    baseline_transpose_kernel<<<numBlocks, threadsPerBlock>>>(d_output, d_input);
 
     cudaEventRecord(stop);
 
