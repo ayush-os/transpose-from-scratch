@@ -9,8 +9,7 @@ set(CUDA_SEPARABLE_COMPILATION ON)
 set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 
 add_executable(transpose
-    src/host_main.cu
-    src/kernels/kernel_baseline.cu
+    src/transpose.cu
 )
 
 target_include_directories(transpose PRIVATE ${CUDA_INCLUDE_DIRS})
