@@ -3,7 +3,25 @@
 #include <iostream>
 #include <vector>
 
-__global__ void transpose_kernel(float *output, const float *input);
+const int TILE_SIZE = 32;
+const int MATRIX_DIM = 4096;
+
+__global__ void transpose_kernel(float *output, const float *input)
+{
+  __shared__ float tile[TILE_SIZE][TILE_SIZE];
+
+  int x = blockIdx.x * blockDim.x + threadIdx.x;
+  int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+  tile[threadIdx.y][threadIdx.x] = input[y * MATRIX_DIM + x];
+
+  __syncthreads();
+
+  int xNew = blockIdx.y * blockDim.x + threadIdx.x;
+  int yNew = blockIdx.x * blockDim.y + threadIdx.y;
+
+  output[yNew * MATRIX_DIM + xNew] = tile[threadIdx.x][threadIdx.y];
+}
 
 void checkCudaError(cudaError_t err, const char *msg) {
   if (err != cudaSuccess) {
@@ -43,7 +61,7 @@ int main() {
       cudaMemcpy(d_input, h_input.data(), bytes, cudaMemcpyHostToDevice),
       "input copy H->D");
 
-  dim3 threadsPerBlock(32, 32, 1);
+  dim3 threadsPerBlock(32, 4, 1);
   dim3 numBlocks(MATRIX_DIM / 32, MATRIX_DIM / 32);
 
   std::cout << "Grid: " << numBlocks.x << "x" << numBlocks.y << " blocks, "
